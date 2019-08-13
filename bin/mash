@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+# mash is the parent of this script's dir, normalized for symlinks
+mash=$(cd "$(dirname "$(readlink "$BASH_SOURCE" || echo "$BASH_SOURCE")")"/.. && pwd -P)
+
+(( ${MASH_LEGIBLE:-1} )) && {
+  # legible is the vendored framework dir
+  legible=$mash/vendor/legible
+
+  [[ -d $legible ]] && for lib in "$mash"/vendor/legible/*.bash; do
+    source "$lib"
+  done
+
+  unset -v legible
+}
+
+shopt -s expand_aliases
+
+# options
+while [[ ${1:-} == -?* ]]; do
+  case $1 in
+    --trace ) set -x;;
+    -- )
+      shift
+      break
+      ;;
+  esac
+  shift
+done
+
+! (( $# )) && {
+  echo "missing command"
+  exit 2
+}
+
+[[ -d ./mash ]] && for lib in ./mash/*.bash; do
+  source "$lib"
+done
+
+unset -v lib
+
+# set 'em up
+source ./Mashfile
+
+# knock 'em down...requires eval and escaping to trigger aliases
+printf -v cmd '%q ' "$@"
+eval -- "$cmd"

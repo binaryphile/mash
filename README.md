@@ -26,6 +26,10 @@ Call the function/alias from the Mashfile directory with:
 
 ARGS are passed to the function or appended to the alias command.
 
+If no Mashfile is found in the current directory, mash will search up
+the directory tree until it finds one, so it works in subdirectories of
+your project as well.
+
 Examples
 --------
 

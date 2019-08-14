@@ -34,13 +34,25 @@ done
 }
 
 [[ -d ./mash ]] && for lib in ./mash/*.bash; do
+  [[ $lib == './mash/*.bash' ]] && break
   source "$lib"
 done
 
 unset -v lib
 
+path=$PWD
+
+while [[ ! -e $path/Mashfile && $path == *?/* ]]; do
+  path=$(dirname "$path")
+done
+
+! [[ -e $path/Mashfile ]] && {
+  echo "Mashfile not found."
+  exit 1
+}
+
 # set 'em up
-source ./Mashfile
+source "$path"/Mashfile
 
 # knock 'em down...requires eval and escaping to trigger aliases
 printf -v cmd '%q ' "$@"
